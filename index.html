@@ -22,9 +22,12 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cantarell',system-
 /* ── DESKTOP ── */
 #desktop{
   position:fixed;inset:0;
-  background:#1a1a2e url('wallpaper.png') center/cover no-repeat;
+  background:#1a1a2e center/cover no-repeat;
   overflow:hidden;
   transition:background-position .05s linear;
+}
+@media(min-width:768px){
+  #desktop{background-image:url('wallpaper.png')}
 }
 
 /* ── TOPBAR ── */
@@ -89,6 +92,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cantarell',system-
   box-shadow:0 24px 64px rgba(0,0,0,.65),0 0 0 1px var(--border);
   display:none;flex-direction:column;
   overflow:hidden;min-width:360px;min-height:260px;
+  contain:layout style;
+  will-change:transform;
 }
 .win.open{display:flex}
 
@@ -139,6 +144,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cantarell',system-
 .dk-img{
   width:48px;height:48px;border-radius:12px;overflow:hidden;
   transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+  will-change:transform;
 }
 .dk-item:hover .dk-img{transform:translateY(-10px) scale(1.18)}
 .dk-dot{
@@ -263,7 +269,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cantarell',system-
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 
 /* ── MOBILE ── */
-#mob{display:none;min-height:100vh;background:#111118;padding:0 0 50px;overflow-y:auto;color:var(--text);font-family:system-ui,sans-serif}
+#mob{display:none;position:fixed;inset:0;background:#111118;padding:0 0 50px;overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;color:var(--text);font-family:system-ui,sans-serif}
 .mob-hdr{background:linear-gradient(180deg,#1e1e30,#111118);padding:56px 24px 28px;text-align:center}
 .mob-av{
   width:80px;height:80px;border-radius:50%;margin:0 auto 14px;
@@ -764,13 +770,19 @@ document.querySelectorAll('.tbar').forEach(tb=>{
   });
 });
 
+let dragPending=false;
 document.addEventListener('mousemove',e=>{
   if(!drag)return;
-  const TH=32,DH=80;
-  let x=e.clientX-dox,y=e.clientY-doy;
-  x=Math.max(0,Math.min(window.innerWidth-drag.offsetWidth,x));
-  y=Math.max(TH,Math.min(window.innerHeight-DH-drag.offsetHeight,y));
-  drag.style.left=x+'px';drag.style.top=y+'px';
+  if(dragPending)return;
+  dragPending=true;
+  requestAnimationFrame(()=>{
+    const TH=32,DH=80;
+    let x=e.clientX-dox,y=e.clientY-doy;
+    x=Math.max(0,Math.min(window.innerWidth-drag.offsetWidth,x));
+    y=Math.max(TH,Math.min(window.innerHeight-DH-drag.offsetHeight,y));
+    drag.style.left=x+'px';drag.style.top=y+'px';
+    dragPending=false;
+  });
 });
 document.addEventListener('mouseup',()=>{drag=null});
 
@@ -783,23 +795,29 @@ function animateBars(){
 }
 
 /* ── CLOCK ── */
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const clockEl=document.getElementById('tb-clock');
 function tick(){
   const n=new Date();
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const hh=String(n.getHours()).padStart(2,'0');
   const mm=String(n.getMinutes()).padStart(2,'0');
-  const el=document.getElementById('tb-clock');
-  if(el)el.textContent=`${days[n.getDay()]} ${n.getDate()} ${months[n.getMonth()]}  ${hh}:${mm}`;
+  if(clockEl)clockEl.textContent=`${DAYS[n.getDay()]} ${n.getDate()} ${MONTHS[n.getMonth()]}  ${hh}:${mm}`;
 }
 tick();setInterval(tick,60000);
 
 /* ── PARALLAX ── */
 const desktop=document.getElementById('desktop');
+let pxPending=false;
 document.addEventListener('mousemove',e=>{
-  const xr=(e.clientX/window.innerWidth-.5);
-  const yr=(e.clientY/window.innerHeight-.5);
-  desktop.style.backgroundPosition=`calc(50% + ${xr*-14}px) calc(50% + ${yr*-14}px)`;
+  if(pxPending)return;
+  pxPending=true;
+  requestAnimationFrame(()=>{
+    const xr=(e.clientX/window.innerWidth-.5);
+    const yr=(e.clientY/window.innerHeight-.5);
+    desktop.style.backgroundPosition=`calc(50% + ${xr*-14}px) calc(50% + ${yr*-14}px)`;
+    pxPending=false;
+  });
 });
 
 /* ── ACTIVITIES TOGGLE ── */
