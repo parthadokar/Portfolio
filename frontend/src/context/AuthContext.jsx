@@ -7,7 +7,8 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('token'))
 
   async function login(username, password) {
-    const { data } = await axios.post('/api/auth/login', { username, password })
+    const base = import.meta.env.VITE_API_URL ?? ''
+    const { data } = await axios.post(`${base}/api/auth/login`, { username, password })
     localStorage.setItem('token', data.token)
     setToken(data.token)
   }
