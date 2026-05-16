@@ -26,7 +26,10 @@ export default function ArticleForm({ initial = {}, onSubmit }) {
         tags:          form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : []
       })
     } catch (err) {
-      setError(err.response?.data?.errors ?? { general: 'Something went wrong.' })
+      const data = err.response?.data
+      if (data?.errors) setError(data.errors)
+      else if (data?.detail) setError({ general: typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail) })
+      else setError({ general: 'Something went wrong.' })
     } finally {
       setSubmitting(false)
     }
