@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 export default function ArticleForm({ initial = {}, onSubmit }) {
   const [form, setForm] = useState({
@@ -8,6 +8,23 @@ export default function ArticleForm({ initial = {}, onSubmit }) {
     publishedDate: initial.publishedDate ? initial.publishedDate.slice(0, 16) : '',
     tags:          initial.tags?.join(', ') || ''
   })
+  const textareaRef = useRef(null)
+
+  function insertImage() {
+    const url = prompt('Image URL:')
+    if (!url) return
+    const alt = prompt('Alt text (optional):') || 'image'
+    const markdown = `\n![${alt}](${url})\n`
+    const el = textareaRef.current
+    const start = el.selectionStart
+    const end = el.selectionEnd
+    const newContent = form.content.slice(0, start) + markdown + form.content.slice(end)
+    setForm(f => ({ ...f, content: newContent }))
+    setTimeout(() => {
+      el.focus()
+      el.setSelectionRange(start + markdown.length, start + markdown.length)
+    }, 0)
+  }
   const [error, setError]           = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -44,8 +61,13 @@ export default function ArticleForm({ initial = {}, onSubmit }) {
         </div>
 
         <div className="form-group">
-          <label>Content *</label>
-          <textarea value={form.content} onChange={set('content')} rows={16} placeholder="Write your article…" required />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem' }}>
+            <label style={{ marginBottom: 0 }}>Content *</label>
+            <button type="button" className="btn" style={{ fontSize: '0.78rem', padding: '0.25rem 0.65rem' }} onClick={insertImage}>
+              + Image
+            </button>
+          </div>
+          <textarea ref={textareaRef} value={form.content} onChange={set('content')} rows={16} placeholder="Write your article… (supports Markdown)" required />
         </div>
 
         <div className="form-row">

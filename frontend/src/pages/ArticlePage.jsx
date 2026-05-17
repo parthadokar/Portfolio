@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { getArticle, deleteArticle } from '../api/articles.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -70,7 +72,9 @@ export default function ArticlePage() {
 
       <div className="article-body">
         <hr className="article-divider" />
-        <div className="article-content">{article.content}</div>
+        <ReactMarkdown className="article-content" remarkPlugins={[remarkGfm]}>
+          {article.content}
+        </ReactMarkdown>
       </div>
     </div>
   )

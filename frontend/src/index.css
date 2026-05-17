@@ -268,10 +268,50 @@ body {
   padding: 2.5rem 1.5rem 5rem;
 }
 .article-content {
-  white-space: pre-wrap;
   line-height: 1.9;
   font-size: 1.05rem;
   color: var(--text);
+}
+.article-content p { margin-bottom: 1.25rem; }
+.article-content h1, .article-content h2, .article-content h3 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 2rem 0 0.75rem;
+  color: var(--text);
+}
+.article-content h1 { font-size: 1.8rem; }
+.article-content h2 { font-size: 1.4rem; }
+.article-content h3 { font-size: 1.15rem; }
+.article-content img {
+  max-width: 100%;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+  display: block;
+}
+.article-content a { color: var(--primary); }
+.article-content ul, .article-content ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
+.article-content li { margin-bottom: 0.3rem; }
+.article-content code {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.9em;
+}
+.article-content pre {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  overflow-x: auto;
+  margin-bottom: 1.25rem;
+}
+.article-content pre code { background: none; border: none; padding: 0; }
+.article-content blockquote {
+  border-left: 3px solid var(--primary);
+  padding-left: 1rem;
+  color: var(--muted);
+  margin: 1.25rem 0;
 }
 .article-divider {
   border: none;
